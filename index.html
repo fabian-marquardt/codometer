@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Demo</title>
+</head>
+<body>
+    <a href="http://jquery.com/">jQuery</a>
+    <script src="jquery-2.1.1.js"></script>
+    <script>
+
+    var finger_positions = [ "KEY_A","KEY_S","KEY_D","KEY_F","KEY_SPACE","KEY_SPACE","KEY_J","KEY_K","KEY_L","KEY_SEMICOLON" ];
+
+    var finger_mapping = {
+        KEY_Q: 0,
+        KEY_W: 1,
+        KEY_E: 2,
+        KEY_R: 3,
+        KEY_T: 3,
+        KEY_Y: 6,
+        KEY_U: 6,
+        KEY_I: 7,
+        KEY_O: 8,
+        KEY_P: 9,
+        KEY_A: 0,
+        KEY_S: 1,
+        KEY_D: 2,
+        KEY_F: 3,
+        KEY_G: 3,
+        KEY_H: 6,
+        KEY_J: 6,
+        KEY_K: 7,
+        KEY_L: 8,
+        KEY_Z: 0,
+        KEY_X: 1,
+        KEY_C: 2,
+        KEY_V: 3,
+        KEY_B: 3,
+        KEY_N: 6,
+        KEY_M: 6,
+        KEY_SHIFT_L: 0,
+        KEY_SHIFT_R: 9
+    };
+
+    var key_positions = {
+        KEY_Q: [2,3],
+        KEY_W: [3,3],
+        KEY_E: [4,3],
+        KEY_R: [5,3],
+        KEY_T: [6,3],
+        KEY_Y: [7,3],
+        KEY_U: [8,3],
+        KEY_I: [9,3],
+        KEY_O: [10,3],
+        KEY_P: [11,3],
+        KEY_A: [2,2],
+        KEY_S: [3,2],
+        KEY_D: [4,2],
+        KEY_F: [5,2],
+        KEY_G: [6,2],
+        KEY_H: [7,2],
+        KEY_J: [8,2],
+        KEY_K: [9,2],
+        KEY_L: [10,2],
+        KEY_Z: [2,1],
+        KEY_X: [3,1],
+        KEY_C: [4,1],
+        KEY_V: [5,1],
+        KEY_B: [6,1],
+        KEY_N: [7,1],
+        KEY_M: [8,1],
+        KEY_SHIFT_L: [0,1],
+        KEY_SHIFT_R: [12,1]
+    };
+
+    var keyboard_layout = {
+        "q": ["KEY_Q"],
+        "w": ["KEY_W"],
+        "e": ["KEY_E"],
+        "r": ["KEY_R"],
+        "t": ["KEY_T"],
+        "z": ["KEY_Z"],
+        "u": ["KEY_U"],
+        "i": ["KEY_I"],
+        "o": ["KEY_O"],
+        "p": ["KEY_P"],
+        "a": ["KEY_A"],
+        "s": ["KEY_S"],
+        "d": ["KEY_D"],
+        "f": ["KEY_F"],
+        "g": ["KEY_G"],
+        "h": ["KEY_H"],
+        "j": ["KEY_J"],
+        "k": ["KEY_K"],
+        "l": ["KEY_L"],
+        "y": ["KEY_Y"],
+        "x": ["KEY_X"],
+        "c": ["KEY_C"],
+        "v": ["KEY_V"],
+        "b": ["KEY_B"],
+        "n": ["KEY_N"],
+        "m": ["KEY_M"],
+        "H": ["KEY_H","KEY_SHIFT_L"]
+    };
+
+    function get_keys_for_character(character){
+        return keyboard_layout[character];
+    };
+
+    function get_finger_for_key(key){
+        return finger_mapping[key];
+    };
+
+    function get_finger_position_key(finger){
+        return finger_positions[finger];
+    };
+
+    function get_line_offset(line){
+        switch (line) {
+            case 0:
+                return 0;
+            case 1:
+                return -0.25;
+            case 2:
+                return -0.75;
+            case 3:
+                return -1;
+            case 4:
+                return -1.5;
+        }
+    };
+
+    function get_key_coordinates(key){
+        var position = key_positions[key];
+        var x = position[0] + get_line_offset(position[1]);
+        var y = position[1];
+        return [x, y];
+    };
+
+    function get_coordinate_distance(coordinate1,coordinate2){
+        var x_difference = Math.abs(coordinate1[0] - coordinate2[0]);
+        var y_difference = Math.abs(coordinate1[1] - coordinate2[1]);
+
+        return Math.sqrt(x_difference*x_difference + y_difference*y_difference);
+    };
+
+
+    function process_character(character){
+        var keys = get_keys_for_character(character);
+        var len = keys.length;
+        for (var i = 0; i < len; i++) {
+            var finger = get_finger_for_key(keys[i]);
+            var finger_before_key = get_finger_position_key(finger);
+            var finger_before_coordinates = get_key_coordinates(finger_before_key);
+            finger_positions[finger] = keys[i];
+            var finger_after_key = get_finger_position_key(finger);
+            var finger_after_coordinates = get_key_coordinates(finger_after_key);
+            alert("Finger moving from " + finger_before_key + " (" + finger_before_coordinates[0] + ", " + finger_before_coordinates[1] + ") to " + finger_after_key + " (" + finger_after_coordinates[0] + ", " + finger_after_coordinates[1] + ") - distance " + get_coordinate_distance(finger_before_coordinates, finger_after_coordinates));
+        }
+    };
+
+    function process_text(text){
+        var len = text.length;
+        for (var i = 0; i < len; i++) {
+              process_character(text[i]);
+        }
+    };
+
+    $( document ).ready(function() {
+        process_text("Hallo");
+    });
+ 
+    </script>
+</body>
+</html>
